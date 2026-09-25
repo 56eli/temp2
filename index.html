@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Für Tanja – Eine Speicher-Landkarte</title>
+<meta name="description" content="Eine exakte Bestandsaufnahme für Tanja: Was mit 291.544 Dateien passieren könnte – gerechnet bis aufs letzte Byte. Nichts ist gelöscht. Das hier ist die Landkarte.">
+<style>
+:root{
+  --bg:#faf7f2;
+  --ink:#2b2724;
+  --ink-soft:#6f6357;
+  --ink-faint:#9a8c7c;
+  --accent:#c96f4a;
+  --accent-soft:#f2ddcf;
+  --green:#4a7c59;
+  --green-deep:#3f6b4d;
+  --green-soft:#e7f0e9;
+  --red:#b0524d;
+  --red-soft:#f6e7e4;
+  --amber:#c99a3f;
+  --amber-deep:#8a6a24;
+  --amber-soft:#f8f0dc;
+  --card:#fffdf9;
+  --line:rgba(43,39,36,.09);
+  --bluegrey:#7e93a9;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Mono",Consolas,"Liberation Mono",Menlo,monospace;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --shadow:0 1px 2px rgba(43,39,36,.05),0 14px 34px -16px rgba(43,39,36,.16);
+  --shadow-lg:0 2px 4px rgba(43,39,36,.05),0 28px 60px -28px rgba(43,39,36,.24);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans);
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+body::before{
+  content:"";
+  position:fixed;inset:0;pointer-events:none;z-index:2;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.045'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+::selection{background:var(--accent-soft);color:var(--ink)}
+.wrap{max-width:1060px;margin:0 auto;padding:0 24px;position:relative;z-index:3}
+code{font-family:var(--mono)}
+
+/* ---------- reveal ---------- */
+.rv{opacity:0;transform:translateY(24px);transition:opacity .85s var(--ease),transform .85s var(--ease);transition-delay:var(--d,0s)}
+.rv.in{opacity:1;transform:none}
+
+/* ---------- shared bits ---------- */
+.kicker{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--accent);
+}
+.kicker::before{content:"";width:26px;height:1.5px;background:currentColor;opacity:.6;border-radius:2px}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.14;letter-spacing:-.01em}
+h2{font-size:clamp(30px,4.6vw,44px);margin:14px 0 12px}
+.lead{font-size:clamp(15.5px,1.9vw,17.5px);color:var(--ink-soft);max-width:62ch}
+.sec{padding:96px 0}
+.sec-head{margin-bottom:44px}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;overflow:hidden;padding:118px 0 84px;text-align:center}
+.hero .wrap{max-width:900px}
+.deco{position:absolute;inset:0;pointer-events:none;z-index:1}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55}
+.b1{width:560px;height:520px;left:-140px;top:-160px;background:radial-gradient(circle at 40% 40%,#f3dcc9,transparent 68%);animation:drift1 16s ease-in-out infinite alternate}
+.b2{width:520px;height:520px;right:-160px;top:-40px;background:radial-gradient(circle at 60% 40%,#dde9df,transparent 68%);animation:drift2 19s ease-in-out infinite alternate}
+.b3{width:640px;height:420px;left:32%;bottom:-280px;background:radial-gradient(circle at 50% 50%,#f4e6d2,transparent 70%);opacity:.5}
+@keyframes drift1{from{transform:translate(0,0) scale(1)}to{transform:translate(40px,30px) scale(1.06)}}
+@keyframes drift2{from{transform:translate(0,0) scale(1.04)}to{transform:translate(-36px,26px) scale(1)}}
+.hero .kicker{justify-content:center}
+.hero .kicker::after{content:"";width:26px;height:1.5px;background:currentColor;opacity:.6;border-radius:2px}
+h1{font-size:clamp(40px,6.4vw,70px);margin:26px 0 22px;color:var(--ink)}
+h1 .q{color:var(--ink-faint);font-weight:400}
+h1 em{font-style:italic;color:var(--accent)}
+.sub{font-size:clamp(15.5px,2vw,18px);color:var(--ink-soft);max-width:66ch;margin:0 auto;line-height:1.75}
+.sub strong{color:var(--ink);font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:52px 0 30px}
+.stat{
+  background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:26px 22px 24px;text-align:left;box-shadow:var(--shadow);
+  transition:transform .5s var(--ease),box-shadow .5s var(--ease);
+}
+.stat:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg)}
+.s-ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;margin-bottom:16px}
+.s-ic svg{width:20px;height:20px}
+.s-ic.red{background:var(--red-soft);color:var(--red)}
+.s-ic.green{background:var(--green-soft);color:var(--green)}
+.s-num{font-family:var(--serif);font-size:clamp(34px,4vw,45px);line-height:1;letter-spacing:-.02em;font-weight:600}
+.s-num .sig,.s-num .unit{font-size:.5em;font-style:normal}
+.s-num .unit{margin-left:5px;letter-spacing:0}
+.s-num.red{color:var(--red)}
+.s-num.green{color:var(--green)}
+.s-lab{font-weight:600;font-size:14.5px;margin-top:9px}
+.s-sub{font-size:13px;color:var(--ink-faint);margin-top:4px;line-height:1.5}
+.seals{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.seal{
+  display:inline-flex;align-items:center;gap:9px;
+  background:rgba(255,253,249,.8);border:1px solid var(--line);border-radius:999px;
+  padding:8px 16px;font-size:12.5px;color:var(--ink-soft);backdrop-filter:blur(4px);
+}
+.seal svg{width:15px;height:15px;color:var(--green);flex:none}
+.cue{margin:64px auto 0;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--ink-faint);font-family:var(--mono);font-size:10.5px;letter-spacing:.28em;text-transform:uppercase}
+.cue svg{width:18px;height:18px;animation:bob 2.2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+
+/* ---------- FLOW ---------- */
+.pane{
+  background:var(--card);border:1px solid var(--line);border-radius:18px;
+  box-shadow:var(--shadow);padding:26px 26px 22px;
+}
+#flowsvg{width:100%}
+#flowsvg svg{display:block;width:100%;height:auto}
+svg.flow text{font-family:var(--sans)}
+svg.flow .flowline{fill:none;stroke-linecap:butt;transition:opacity .25s ease;cursor:pointer;outline:none}
+svg.flow .flowline:focus-visible{stroke-dasharray:4 3}
+svg.flow.has-hover .flowline{opacity:.13!important}
+svg.flow.has-hover .flowline.on{opacity:.95!important}
+svg.flow .node{transition:opacity .25s ease}
+svg.flow .ntxt{transition:opacity .25s ease}
+svg.flow.has-hover .node{opacity:.45}
+svg.flow.has-hover .node.on{opacity:1}
+svg.flow.has-hover .ntxt{opacity:.38}
+svg.flow.has-hover .ntxt.on{opacity:1}
+.legend{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:18px}
+.legend .lgroup{
+  grid-column:1/-1;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--ink-faint);margin-top:8px;
+}
+.legend .chip{
+  display:flex;align-items:center;gap:10px;background:#fbf7f0;border:1px solid var(--line);
+  border-radius:12px;padding:10px 14px;font-size:13px;cursor:default;
+  transition:border-color .2s,background .2s,transform .2s;
+}
+.legend .chip:hover,.legend .chip:focus-visible{border-color:#b8a68e;background:#fff;transform:translateY(-1px);box-shadow:0 6px 16px -8px rgba(43,39,36,.3)}
+.legend .chip i{width:10px;height:10px;border-radius:50%;flex:none}
+.legend .chip.keep i{background:var(--green)}
+.legend .chip.dup i{background:var(--red)}
+.legend .chip.bin i{background:var(--amber)}
+.legend .chip .l-name{min-width:0;overflow-wrap:anywhere}
+.legend .chip small{display:block;color:var(--ink-faint);font-size:11px}
+.legend .chip b{margin-left:auto;font-family:var(--mono);font-weight:600;font-size:12.5px;white-space:nowrap;color:var(--ink-soft)}
+.hintline{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:16px;font-size:12.5px;color:var(--ink-faint)}
+.mini{
+  display:grid;grid-template-columns:1fr;gap:0;margin-top:26px;background:#f6efe4;
+  border:1px solid #e7d9c4;border-radius:14px;padding:18px 22px;
+}
+.mini h3{font-size:16.5px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.mini h3 svg{width:17px;height:17px;color:var(--accent)}
+.mrow{display:flex;align-items:baseline;gap:12px;padding:7px 0;border-top:1px dashed #e2d3bd;font-size:13.5px;flex-wrap:wrap}
+.mrow:first-of-type{border-top:none}
+.mrow .ml{color:var(--ink-soft)}
+.mrow .ml small{display:block;font-size:11.5px;color:var(--ink-faint)}
+.mrow .mv{margin-left:auto;font-family:var(--mono);font-size:13px;display:flex;align-items:baseline;gap:9px;white-space:nowrap}
+.mrow .old{color:var(--ink-faint);text-decoration:line-through;text-decoration-color:rgba(176,82,77,.55)}
+.mrow .new{color:var(--green-deep);font-weight:700}
+.mrow .arw{color:var(--accent);font-family:var(--sans)}
+.mini .cap{margin-top:12px;font-style:italic;color:var(--green-deep);font-size:13.5px}
+
+/* ---------- S3 Ordner ---------- */
+.bignums{
+  display:flex;align-items:center;justify-content:center;gap:clamp(14px,3vw,32px);
+  font-family:var(--serif);flex-wrap:wrap;text-align:center;margin:8px 0 6px;
+}
+.bignums .n{font-size:clamp(42px,6.5vw,66px);font-weight:600;letter-spacing:-.02em;line-height:1}
+.bignums .a{color:var(--ink)}
+.bignums .b{color:var(--green)}
+.bignums .t{display:block;font-size:clamp(13px,1.6vw,15px);color:var(--ink-faint);font-family:var(--sans);font-weight:400;margin-top:8px;letter-spacing:0}
+.bignums svg{width:clamp(30px,4.5vw,46px);color:var(--accent);flex:none}
+.dots-note{text-align:center;font-size:12.5px;color:var(--ink-faint);font-family:var(--mono)}
+.dots{
+  display:grid;grid-template-columns:repeat(auto-fill,13px);gap:7px;justify-content:center;
+  max-width:600px;margin:26px auto 30px;min-height:130px;
+}
+.dot{
+  width:13px;height:13px;border-radius:50%;background:#dcc8b4;
+  transition:transform .45s ease,background-color .45s ease,opacity .45s ease;
+  transition-delay:calc(var(--i)*1.1ms);
+}
+.dot.ok{background:var(--green)}
+.dot.out{background:var(--red);opacity:.26;transform:scale(.42)}
+.pills{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:6px auto 14px;max-width:840px}
+.pill{
+  border:1px solid var(--line);background:var(--card);border-radius:999px;
+  padding:10px 18px;font-family:var(--sans);font-size:13.5px;color:var(--ink-soft);
+  cursor:pointer;display:inline-flex;align-items:center;gap:9px;
+  transition:all .25s var(--ease);box-shadow:0 1px 2px rgba(43,39,36,.04);
+}
+.pill b{font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--ink)}
+.pill:hover{border-color:var(--accent);transform:translateY(-1px)}
+.pill:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pill[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#f2e9df}
+.pill[aria-pressed="true"] b{color:#f6cfa9}
+.pill .tag{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  background:var(--accent);color:#fff;border-radius:999px;padding:3px 8px;
+}
+#vdesc{
+  text-align:center;max-width:640px;margin:0 auto;font-size:15px;color:var(--ink-soft);
+  min-height:3.2em;transition:opacity .18s ease;line-height:1.6;
+}
+#vdesc.fade{opacity:0}
+#vdesc strong{color:var(--ink)}
+.cap-line{text-align:center;margin-top:22px;font-size:14.5px;color:var(--ink);font-style:italic;font-family:var(--serif)}
+
+/* ---------- S4 Tiefen ---------- */
+.depths{display:grid;grid-template-columns:1.08fr .92fr;gap:24px;align-items:start}
+.histo{padding:24px 24px 18px}
+.histo h3{font-size:17px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.histo h3 small{font-family:var(--mono);font-size:11px;color:var(--ink-faint);font-weight:400}
+.hrows{margin-top:18px}
+.hrow{display:grid;grid-template-columns:74px 1fr 78px;gap:12px;align-items:center;margin:6px 0}
+.hlab{font-size:12px;color:var(--ink-soft);font-family:var(--mono);text-align:right}
+.htrack{height:15px;background:rgba(43,39,36,.06);border-radius:8px;overflow:hidden}
+.hbar{
+  display:block;height:100%;width:var(--w);min-width:2px;border-radius:8px 8px 8px 8px;
+  transform:scaleX(0);transform-origin:left center;
+  transition:transform 1.05s var(--ease);transition-delay:var(--d,0s);
+  background:linear-gradient(90deg,#d8895f,var(--accent));
+}
+.in .hbar{transform:scaleX(1)}
+.hrow.game .hbar{background:linear-gradient(90deg,#96aabf,var(--bluegrey))}
+.hval{font-family:var(--mono);font-size:12.5px;color:var(--ink)}
+.hnote{margin-top:16px;font-size:12px;color:var(--ink-faint)}
+.offenders{display:grid;gap:16px}
+.off{
+  background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);
+  padding:20px 22px;border-left:5px solid var(--accent);
+}
+.off.game{border-left-color:var(--bluegrey)}
+.off .tag{
+  display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+  background:var(--accent-soft);color:var(--accent);border-radius:8px;padding:4px 10px;font-weight:600;
+}
+.off.game .tag{background:#e8eef4;color:#5b7186}
+.off h3{font-size:19.5px;margin:12px 0 8px}
+.off p{font-size:14px;color:var(--ink-soft);line-height:1.65}
+.off .path{
+  display:block;margin-top:12px;background:#f4ede2;border:1px solid #e7dac6;border-radius:10px;
+  padding:10px 13px;font-size:11.5px;line-height:1.65;color:#6d5c49;
+  word-break:break-all;
+}
+.sub-cap{margin-top:22px;font-size:13.5px;color:var(--ink-faint);text-align:center;font-style:italic}
+
+/* ---------- S5 Paare ---------- */
+.abbrev{
+  font-family:var(--mono);font-size:12px;color:var(--ink-faint);margin-top:10px;
+  background:#f4ede2;border:1px solid #e7dac6;display:inline-block;border-radius:8px;padding:6px 12px;
+}
+.merges{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:34px}
+.merge{
+  background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);
+  padding:20px 20px 22px;display:flex;flex-direction:column;gap:13px;
+  transition:transform .5s var(--ease),box-shadow .5s var(--ease);
+}
+.merge:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg)}
+.badge{
+  align-self:flex-start;font-family:var(--mono);font-weight:700;font-size:12.5px;
+  color:var(--red);background:var(--red-soft);border:1px solid rgba(176,82,77,.25);
+  border-radius:999px;padding:6px 13px;letter-spacing:.02em;
+}
+.m-block{border-radius:12px;padding:12px 14px}
+.m-block .mt{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px}
+.m-block code{display:block;font-size:11.5px;line-height:1.7;word-break:break-all}
+.m-lose{background:#faf1ef}
+.m-lose .mt{color:var(--red)}
+.m-lose code{color:#9c625e;text-decoration:line-through;text-decoration-color:rgba(176,82,77,.65);text-decoration-thickness:1.5px}
+.m-arrow{display:flex;align-items:center;gap:10px;color:var(--accent);font-size:12.5px;font-weight:600;font-style:italic}
+.m-arrow svg{width:15px;height:15px;flex:none}
+.m-keep{background:var(--green-soft)}
+.m-keep .mt{color:var(--green-deep)}
+.m-keep code{color:#33543f;font-weight:700}
+.kept-pill{
+  display:inline-block;font-family:var(--mono);font-weight:600;font-size:10px;color:#fff;
+  background:var(--green);border-radius:6px;padding:2px 7px;margin-left:6px;vertical-align:2px;
+}
+.m-cap{font-size:13px;color:var(--ink-soft);line-height:1.6;font-style:italic;border-top:1px dashed var(--line);padding-top:12px;margin-top:auto}
+
+/* ---------- S6 Namen ---------- */
+.naming{display:grid;grid-template-columns:1fr 72px 1fr;gap:20px;align-items:stretch;margin-top:36px}
+.tcol{display:grid;gap:12px;align-content:center}
+.tchip{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:13px 16px;box-shadow:var(--shadow)}
+.tchip .tl{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:5px}
+.tchip code{font-size:12px;line-height:1.65;color:var(--ink-soft);word-break:break-all}
+.tarrow{display:grid;place-items:center}
+.tarrow .ab{
+  width:52px;height:52px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;
+  box-shadow:0 10px 24px -8px rgba(201,111,74,.6);
+}
+.tarrow svg{width:22px;height:22px}
+.propose{
+  border:2px solid var(--green);background:linear-gradient(150deg,#f2f8f3,#e9f2ea);
+  border-radius:16px;padding:24px 24px;display:flex;flex-direction:column;justify-content:center;gap:12px;
+  box-shadow:0 24px 50px -28px rgba(74,124,89,.5);
+}
+.propose .pl{
+  display:inline-flex;align-items:center;gap:8px;align-self:flex-start;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--green-deep);
+}
+.propose .pl svg{width:16px;height:16px}
+.propose .pname{font-family:var(--mono);font-size:clamp(15px,2vw,19px);font-weight:700;color:#2f5140;word-break:break-all;line-height:1.5}
+.rules{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:34px}
+.rule{
+  background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);
+  padding:22px 24px;display:flex;gap:18px;align-items:flex-start;
+}
+.rule .rn{font-family:var(--serif);font-size:30px;color:var(--accent);line-height:1;font-weight:600;flex:none;width:44px}
+.rule p{font-size:14.5px;color:var(--ink-soft);line-height:1.65}
+.rule p strong{color:var(--ink)}
+.rule .mono-chip{font-family:var(--mono);font-size:12px;background:var(--amber-soft);color:var(--amber-deep);border-radius:7px;padding:2px 8px;white-space:nowrap}
+
+/* ---------- Footer ---------- */
+footer{padding:40px 0 90px}
+.honesty{
+  background:linear-gradient(155deg,#282220,#1b1714);
+  color:#ece2d4;border-radius:22px;padding:52px clamp(26px,5vw,58px);
+  box-shadow:0 40px 80px -40px rgba(30,22,15,.6);position:relative;overflow:hidden;
+}
+.honesty::after{
+  content:"";position:absolute;right:-140px;top:-140px;width:420px;height:420px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,111,74,.16),transparent 65%);
+}
+.f-kick{
+  display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.24em;text-transform:uppercase;color:#d29a72;margin-bottom:22px;
+}
+.f-kick svg{width:16px;height:16px}
+.f-body{font-family:var(--serif);font-size:clamp(18px,2.4vw,23px);line-height:1.65;max-width:56ch;position:relative;z-index:1}
+.f-body em{color:#f0b48c;font-style:italic}
+.f-trust{
+  display:flex;gap:12px;align-items:flex-start;margin-top:34px;padding-top:26px;
+  border-top:1px solid rgba(236,226,212,.14);font-size:14.5px;color:#cfc2b1;line-height:1.7;position:relative;z-index:1;
+}
+.f-trust svg{width:19px;height:19px;color:#8fbf9a;flex:none;margin-top:2px}
+.f-trust strong{color:#f0e7d8}
+.f-bytes{
+  margin-top:22px;font-family:var(--mono);font-size:12px;color:#c8b393;
+  background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;padding:14px 18px;overflow-wrap:anywhere;line-height:1.8;position:relative;z-index:1;
+}
+.f-end{margin-top:26px;text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint)}
+
+/* ---------- Tooltip ---------- */
+#tip{
+  position:fixed;z-index:60;pointer-events:none;background:#26211d;color:#f4ede2;
+  font-family:var(--mono);font-size:12.5px;padding:8px 13px;border-radius:10px;
+  box-shadow:0 12px 30px -10px rgba(30,22,15,.5);white-space:nowrap;
+  opacity:0;transform:translateY(4px);transition:opacity .15s ease,transform .15s ease;
+}
+#tip.show{opacity:1;transform:none}
+#tip[hidden]{display:none}
+
+/* ---------- Responsive ---------- */
+@media (max-width:960px){
+  .depths{grid-template-columns:1fr}
+  .merges{grid-template-columns:1fr}
+  .naming{grid-template-columns:1fr}
+  .tarrow{padding:4px 0}
+  .tarrow .ab svg{transform:rotate(90deg)}
+  .legend{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:880px){
+  .stats{grid-template-columns:1fr}
+  .rules{grid-template-columns:1fr}
+  .sec{padding:72px 0}
+}
+@media (max-width:560px){
+  .legend{grid-template-columns:1fr}
+  .hrow{grid-template-columns:60px 1fr 66px;gap:8px}
+  .hintline{flex-direction:column;gap:6px}
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .rv{opacity:1!important;transform:none!important}
+  .hbar{transform:scaleX(1)!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ S1 · HERO ============ -->
+<header class="hero">
+  <div class="deco" aria-hidden="true">
+    <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  </div>
+  <div class="wrap">
+    <p class="kicker rv">Für Tanja · Eine exakte Bestandsaufnahme, 18.09.2026</p>
+    <h1 class="rv" style="--d:.12s"><span class="q">„</span>86.167 Dateien weg –<br>und <em>keine einzige</em> davon verloren.<span class="q">“</span></h1>
+    <p class="sub rv" style="--d:.24s">Dein Speicher hat <strong>291.544 Dateien</strong>. Fast ein Drittel davon existiert ein zweites (oder drittes) Mal. Diese Seite zeigt, wie es danach aussehen könnte – gerechnet aus einer Prüfung, die bis aufs letzte Byte aufgeht. <strong>Nichts ist gelöscht.</strong> Das hier ist die Landkarte.</p>
+
+    <div class="stats">
+      <article class="stat rv" style="--d:.1s">
+        <div class="s-ic red">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-3a2 2 0 0 1-2-2V2"/><path d="M9 18a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h5l6 6v8a2 2 0 0 1-2 2Z"/><path d="M3 7.94V20a2 2 0 0 0 2 2h10"/></svg>
+        </div>
+        <div class="s-num red"><span class="sig">−</span><span data-count="86167" data-dec="0">0</span></div>
+        <div class="s-lab">Dateien</div>
+        <p class="s-sub">verschwinden – nur Doppelstücke</p>
+      </article>
+      <article class="stat rv" style="--d:.22s">
+        <div class="s-ic red">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" x2="2" y1="12" y2="12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" x2="6.01" y1="16" y2="16"/><line x1="10" x2="10.01" y1="16" y2="16"/></svg>
+        </div>
+        <div class="s-num red"><span class="sig">−</span><span data-count="408.8" data-dec="1">0,0</span><span class="unit">GB</span></div>
+        <div class="s-lab">Platz kommt frei</div>
+        <p class="s-sub">von 1.205,5 GB, die heute belegt sind</p>
+      </article>
+      <article class="stat rv" style="--d:.34s">
+        <div class="s-ic green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+        </div>
+        <div class="s-num green">0</div>
+        <div class="s-lab">verlorene Dateien</div>
+        <p class="s-sub">alle <strong><span data-count="205593" data-dec="0">0</span> Einzigartigen</strong> bleiben</p>
+      </article>
+    </div>
+
+    <div class="seals rv" style="--d:.3s">
+      <span class="seal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+        letzte Kopie bleibt immer
+      </span>
+      <span class="seal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+        SHA-256-Fingerabdruck je Datei
+      </span>
+      <span class="seal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg>
+        Papierkorb-Einzelteile einzeln aufgelistet
+      </span>
+    </div>
+
+    <div class="cue rv" style="--d:.5s" aria-hidden="true">
+      die Karte ansehen
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ S2 · FLOW ============ -->
+<section class="sec" id="fluss">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="kicker">01 · Der Weg der Daten</p>
+      <h2>Wohin jedes Gigabyte wandert</h2>
+      <p class="lead">Links heute, rechts der Plan: Sechs Ziele behalten alles, was einzigartig ist – der Rest verlässt den Speicher. Fahre mit der Maus über die Bänder: Jedes zeigt seinen Wert.</p>
+    </div>
+
+    <div class="pane rv" id="flussPane" style="--d:.12s">
+      <div id="flowsvg" role="figure" aria-label="Flussdiagramm: Datenfluss von heute nach dem Aufräumen"></div>
+
+      <ol class="legend" id="flowLegend">
+        <li class="lgroup">Bleibt</li>
+        <li class="chip keep" data-node="F" tabindex="0"><i></i><span class="l-name">BACKUP große Platte (F:)</span><b>536,2 GB</b></li>
+        <li class="chip keep" data-node="OD" tabindex="0"><i></i><span class="l-name">OneDrive-Backup</span><b>35,3 GB</b></li>
+        <li class="chip keep" data-node="HA" tabindex="0"><i></i><span class="l-name">Handy-Sicherung</span><b>30,4 GB</b></li>
+        <li class="chip keep" data-node="DE" tabindex="0"><i></i><span class="l-name">BACKUP Desktop</span><b>10,2 GB</b></li>
+        <li class="chip keep" data-node="DL" tabindex="0"><i></i><span class="l-name">Downloads</span><b>3,4 GB</b></li>
+        <li class="chip keep" data-node="LP" tabindex="0"><i></i><span class="l-name">BACKUP lahme Platte (D:)</span><b>181,4 GB</b></li>
+        <li class="lgroup">Verlässt den Speicher</li>
+        <li class="chip dup" data-node="DUP" tabindex="0"><i></i><span class="l-name">Doppelstücke<small>85.972 Kopien</small></span><b>380,9 GB</b></li>
+        <li class="chip bin" data-node="BIN" tabindex="0"><i></i><span class="l-name">Papierkorb-Einzelteile<small>195 Dateien</small></span><b>27,9 GB</b></li>
+      </ol>
+
+      <div class="hintline">
+        <span>Tipp: Bänder, Ziele im Diagramm und die Liste darunter reagieren auf Maus und Berührung.</span>
+        <span>Alle GB-Werte gerundet auf eine Nachkommastelle · die Prüfung selbst rechnete in Bytes (siehe Fußzeile).</span>
+      </div>
+    </div>
+
+    <aside class="mini rv" style="--d:.2s">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+        Und nur für F: im Detail – die große Platte
+      </h3>
+      <div class="mrow"><span class="ml">Dateien gesamt</span><span class="mv"><span class="old">151.308</span><span class="arw">→</span><span class="new">133.442</span></span></div>
+      <div class="mrow"><span class="ml">Größe gesamt</span><span class="mv"><span class="old">636,95 GB</span><span class="arw">→</span><span class="new">536,19 GB</span></span></div>
+      <div class="mrow"><span class="ml">davon <b>„Fotos ab 2020“</b><small>deine Foto-Sammlung</small></span><span class="mv"><span class="old">44.669</span><span class="arw">→</span><span class="new">39.254</span> <span style="color:var(--ink-faint);font-size:11.5px">Dateien</span></span></div>
+      <div class="mrow"><span class="ml"><small>Größe der Foto-Sammlung</small></span><span class="mv"><span class="old">171,97 GB</span><span class="arw">→</span><span class="new">141,95 GB</span></span></div>
+      <p class="cap">„5.415 identische Foto-Doppelkeiten weg – jedes einzigartige Foto bleibt.“</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ S3 · ORDNER ============ -->
+<section class="sec" id="ordner" style="background:linear-gradient(180deg,transparent,rgba(201,111,74,.045) 30%,rgba(201,111,74,.045) 70%,transparent)">
+  <div class="wrap">
+    <div class="sec-head rv" style="text-align:center">
+      <p class="kicker">02 · Viele werden wenige</p>
+      <h2>5.147 Ordner heute – wie viele brauchst du wirklich?</h2>
+    </div>
+
+    <div class="bignums rv" aria-live="polite">
+      <div><span class="n a">5.147</span><span class="t">Ordner heute</span></div>
+      <svg viewBox="0 0 40 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8h34m-6-6 6 6-6 6"/></svg>
+      <div><span class="n b" id="afterN">2.013</span><span class="t">Ordner danach</span></div>
+    </div>
+    <p class="dots-note rv">1 Punkt = 25 Ordner · 206 Punkte für 5.147 Ordner (gerundet)</p>
+
+    <div class="dots rv" id="dots" aria-hidden="true"></div>
+
+    <div class="pills rv" id="pills" role="group" aria-label="Aufräum-Varianten">
+      <button class="pill" data-v="0">Aufgeräumt &amp; umbenannt <b>4.496</b></button>
+      <button class="pill" data-v="1">Schlankste Struktur <b>2.013</b><span class="tag">Der Wow-Effekt</span></button>
+      <button class="pill" data-v="2">Nur Löschen <b>4.496</b></button>
+      <button class="pill" data-v="3">Tiefe Struktur behalten <b>4.496</b></button>
+      <button class="pill" data-v="4">Bereit für externe Platte <b>4.498</b></button>
+    </div>
+    <p id="vdesc" class="rv"></p>
+
+    <p class="cap-line rv">„Fünf Varianten – in allen gelten dieselben 205.377 Dateien. Unterschied: nur Ordnung und Namen.“</p>
+  </div>
+</section>
+
+<!-- ============ S4 · TIEFEN ============ -->
+<section class="sec" id="tiefen">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="kicker">03 · Die Tiefen</p>
+      <h2>Wie tief liegt es vergraben?</h2>
+      <p class="lead">Manche deiner Dateien wohnen zehn Etagen unter der Erde. Das Histogramm zeigt, auf welcher Ordnertiefe wie viele Dateien liegen.</p>
+    </div>
+
+    <div class="depths">
+      <div class="pane histo rv" id="histoPane">
+        <h3>Dateien pro Ordnertiefe <small>logarithmische Skala – sonst wären die kleinen Ebenen unsichtbar</small></h3>
+        <div class="hrows">
+          <div class="hrow" style="--w:44.6%;--d:.00s"><span class="hlab">Ebene 0</span><span class="htrack"><span class="hbar"></span></span><span class="hval">146</span></div>
+          <div class="hrow" style="--w:88.6%;--d:.04s"><span class="hlab">Ebene 1</span><span class="htrack"><span class="hbar"></span></span><span class="hval">20.114</span></div>
+          <div class="hrow" style="--w:93.0%;--d:.08s"><span class="hlab">Ebene 2</span><span class="htrack"><span class="hbar"></span></span><span class="hval">33.216</span></div>
+          <div class="hrow" style="--w:100%;--d:.12s"><span class="hlab">Ebene 3</span><span class="htrack"><span class="hbar"></span></span><span class="hval">72.306</span></div>
+          <div class="hrow" style="--w:96.5%;--d:.16s"><span class="hlab">Ebene 4</span><span class="htrack"><span class="hbar"></span></span><span class="hval">48.825</span></div>
+          <div class="hrow" style="--w:90.9%;--d:.20s"><span class="hlab">Ebene 5</span><span class="htrack"><span class="hbar"></span></span><span class="hval">26.071</span></div>
+          <div class="hrow" style="--w:89.4%;--d:.24s"><span class="hlab">Ebene 6</span><span class="htrack"><span class="hbar"></span></span><span class="hval">22.190</span></div>
+          <div class="hrow" style="--w:82.9%;--d:.28s"><span class="hlab">Ebene 7</span><span class="htrack"><span class="hbar"></span></span><span class="hval">10.710</span></div>
+          <div class="hrow game" style="--w:95.7%;--d:.32s"><span class="hlab">Ebene 8</span><span class="htrack"><span class="hbar"></span></span><span class="hval">44.917</span></div>
+          <div class="hrow game" style="--w:84.3%;--d:.36s"><span class="hlab">Ebene 9</span><span class="htrack"><span class="hbar"></span></span><span class="hval">12.536</span></div>
+          <div class="hrow game" style="--w:45.1%;--d:.40s"><span class="hlab">Ebene 10</span><span class="htrack"><span class="hbar"></span></span><span class="hval">154</span></div>
+          <div class="hrow game" style="--w:52.5%;--d:.44s"><span class="hlab">Ebene 11</span><span class="htrack"><span class="hbar"></span></span><span class="hval">353</span></div>
+          <div class="hrow game" style="--w:16.0%;--d:.48s"><span class="hlab">Ebene 12</span><span class="htrack"><span class="hbar"></span></span><span class="hval">5</span></div>
+          <div class="hrow game" style="--w:0%;--d:.52s"><span class="hlab">Ebene 13</span><span class="htrack"><span class="hbar"></span></span><span class="hval">0</span></div>
+          <div class="hrow game" style="--w:6.2%;--d:.56s"><span class="hlab">Ebene 14</span><span class="htrack"><span class="hbar"></span></span><span class="hval">1</span></div>
+        </div>
+        <p class="hnote"><span style="color:var(--accent)">■</span> warm = dein eigenes Archiv &nbsp;·&nbsp; <span style="color:var(--bluegrey)">■</span> grau-blau = Spiele-Technik (bleibt unberührt)</p>
+      </div>
+
+      <div class="offenders">
+        <article class="off rv" style="--d:.08s">
+          <span class="tag">10 Ebenen</span>
+          <h3>Der tiefste eigene Ordner</h3>
+          <p>Zehn Ordner tief verbirgt sich … die erste Pause einer Theateraufführung. 48 Dateien.</p>
+          <code class="path">…\Fotos von anno dazumal bis 2016\Theateraufführung Vampire\HN_Premierengeschenk\Copyright_Annelie Gülsdorff\Aufführung_Pausen\Erste Pause</code>
+        </article>
+        <article class="off rv" style="--d:.16s">
+          <span class="tag">297 Ordner</span>
+          <h3>Tiefer als 8 Ebenen – dein Archiv</h3>
+          <p>2.313 Dateien liegen in eigenen Ordnern ab Ebene 8 verteilt. Beim Aufräumen flachen diese Pfade deutlich ab – ohne dass eine Datei angefasst wird.</p>
+        </article>
+        <article class="off game rv" style="--d:.24s">
+          <span class="tag">14 Ebenen</span>
+          <h3>Der Rekord: ein Spiel</h3>
+          <p>Deep Rock Galactic (Steam) baut 14 Ebenen – reine Technik, braucht kein Aufräumen. Deine Steam-Sammlung (48.255 Dateien · 151,2 GB) bleibt in allen Varianten unberührt.</p>
+        </article>
+      </div>
+    </div>
+
+    <p class="sub-cap rv">Ebene 0 = direkt im Hauptordner. Der Zacken bei Ebene 8 ist Spiele-Technik.</p>
+  </div>
+</section>
+
+<!-- ============ S5 · PAARE ============ -->
+<section class="sec" id="paare" style="background:linear-gradient(180deg,transparent,rgba(74,124,89,.05) 30%,rgba(74,124,89,.05) 70%,transparent)">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="kicker">04 · Verschmelzen statt löschen</p>
+      <h2>Drei echte Paare aus deinem Archiv</h2>
+      <p class="lead">„Echte Paare aus deinem Archiv. Oben: das Exemplar, das weicht. Unten: das Exemplar, das bleibt (vollständigere + neuere Version gewinnt).“</p>
+      <p class="abbrev rv">E:\…\ = E:\BACKUP lahme Platte (D)\Tanjas Ordner_Archiv</p>
+    </div>
+
+    <div class="merges">
+      <article class="merge rv" style="--d:.05s">
+        <span class="badge">5,38 GB frei</span>
+        <div class="m-block m-lose">
+          <span class="mt">weicht</span>
+          <code>E:\…\Fotos_Archiv\Fotos\2015\VW Zeit 1.11.2015-11.11.2016\Newsletter Intro</code>
+        </div>
+        <div class="m-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 7 12 12 7 17"/><polyline points="13 7 18 12 13 17"/></svg>
+          ↳ verschmilzt in
+        </div>
+        <div class="m-block m-keep">
+          <span class="mt">bleibt</span>
+          <code>E:\…\VW Zeit 1.11.2015-11.11.2016\Newsletter Markenvertreter\Newsletter Intro<span class="kept-pill">behalten</span></code>
+        </div>
+        <p class="m-cap">„Zwei identische Newsletter-Ordner – der Behalter liegt sogar tiefer verschachtelt. Aufräumen heißt nicht immer: oben bleiben.“</p>
+      </article>
+
+      <article class="merge rv" style="--d:.15s">
+        <span class="badge">5,12 GB frei</span>
+        <div class="m-block m-lose">
+          <span class="mt">weicht</span>
+          <code>D:\OneDrive Backup 2026 Februar\Tanja - Eigene Dateien\attachments</code>
+        </div>
+        <div class="m-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 7 12 12 7 17"/><polyline points="13 7 18 12 13 17"/></svg>
+          ↳ verschmilzt in
+        </div>
+        <div class="m-block m-keep">
+          <span class="mt">bleibt</span>
+          <code>D:\BACKUP Desktop\Signal Stand 6.8.2024<span class="kept-pill">behalten</span></code>
+        </div>
+        <p class="m-cap">„Signal-Anhänge doppelt vorgehalten: einmal als Anhang-Sammlung, einmal im eigentlichen Backup. Ein Ort reicht.“</p>
+      </article>
+
+      <article class="merge rv" style="--d:.25s">
+        <span class="badge">3,09 GB frei</span>
+        <div class="m-block m-lose">
+          <span class="mt">weicht · zweimal</span>
+          <code>E:\…\Tanjas Ordner 2014_2015_2016\Allgemeine Dateien\05.01.14-23.03.2014\Katzengejammer</code>
+          <code style="margin-top:8px">E:\…\What is Love\B_Christopher T.- 05.01.14-23.03.2014\Katzengejammer</code>
+        </div>
+        <div class="m-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 7 12 12 7 17"/><polyline points="13 7 18 12 13 17"/></svg>
+          ↳ verschmilzt in
+        </div>
+        <div class="m-block m-keep">
+          <span class="mt">bleibt</span>
+          <code>E:\…\Allgemeine Dateien\Katzengejammer<span class="kept-pill">behalten</span></code>
+        </div>
+        <p class="m-cap">„Dreifach vorhanden, dreifach versteckt. Künftig ein Ordner, direkt auffindbar.“</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ S6 · NAMEN ============ -->
+<section class="sec" id="namen">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="kicker">05 · Namen, die bleiben</p>
+      <h2>Deine Fotos heißen weiterhin wie du – nur sortiert</h2>
+      <p class="lead">„Dein Mallorca-Urlaub 2024 liegt in drei verschiedenen Namensstilen verstreut. So findet kein Mensch wieder alles. Der Vorschlag behält deinen Originalnamen – nur die Ordnung kommt vorne dazu.“</p>
+    </div>
+
+    <div class="naming">
+      <div class="tcol">
+        <div class="tchip rv" style="--d:.05s"><div class="tl">Stil 1 · Nummer + Langdatum (F:)</div><code>Fotos ab 2020\2024\9. Mallorca 14.5.-22.5.2024</code></div>
+        <div class="tchip rv" style="--d:.13s"><div class="tl">Stil 2 · Kurzform (OneDrive)</div><code>TanjaDirk - Geteilt\Mallorca 14.5.-22.5.24</code></div>
+        <div class="tchip rv" style="--d:.21s"><div class="tl">Stil 3 · Technisch (OneDrive)</div><code>TanjaDirk - Geteilt\2024_05_Mallorca</code></div>
+      </div>
+      <div class="tarrow rv" style="--d:.28s" aria-hidden="true">
+        <span class="ab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+        </span>
+      </div>
+      <div class="propose rv" style="--d:.34s">
+        <span class="pl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          Der Vorschlag
+        </span>
+        <span class="pname">2024-05 Mallorca (14.5.–22.5.2024)</span>
+      </div>
+    </div>
+
+    <div class="rules">
+      <div class="rule rv" style="--d:.05s"><span class="rn">1</span><p><strong>Jahr zuerst (2024-05)</strong> – Ordner sortieren sich von selbst chronologisch.</p></div>
+      <div class="rule rv" style="--d:.12s"><span class="rn">2</span><p><strong>Dein Name bleibt.</strong> – der bisherige Ordnername wandert als Klammer-Zusatz mit; nichts von deinem Sprachgebrauch geht verloren.</p></div>
+      <div class="rule rv" style="--d:.19s"><span class="rn">3</span><p><strong>Dateien werden nie umbenannt.</strong> – nur Ordner bekommen schlankere Namen; jede Datei behält ihren exakten Namen, bestätigt durch die Fingerabdruck-Prüfung (SHA-256).</p></div>
+      <div class="rule rv" style="--d:.26s"><span class="rn">4</span><p><strong>Doppelte Ordner werden nicht sofort gelöscht</strong> – sie heißen erst einmal <span class="mono-chip">… (aufgelöst 18.10.2026)</span> und bleiben wiedererkennbar.</p></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ S7 · FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="honesty rv">
+      <p class="f-kick">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></svg>
+        Ehrlichkeit zuerst
+      </p>
+      <p class="f-body">„Nichts davon ist passiert. Das ist <em>die Landkarte, nicht die Reise</em> – gerechnet aus einer exakten Bestandsaufnahme vom 18.09.2026. Wenn du 'Los' sagst, beginnt Schritt 1, und jede Änderung wird dir vorher gezeigt.“</p>
+      <div class="f-trust">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        <span><strong>Alle 205.593 einzigartigen Dateien bleiben zu 100 % erhalten</strong> · 408 automatische Prüfungen bestanden · die Buchhaltung geht bis aufs letzte Byte auf:</span>
+      </div>
+      <div class="f-bytes">1.205.498.906.170 B = 796.706.606.639 B + 380.876.782.562 B + 27.915.516.969 B</div>
+    </div>
+    <p class="f-end">Für Tanja · Bestandsaufnahme vom 18.09.2026</p>
+  </div>
+</footer>
+
+<div id="tip" hidden></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- environment ---------- */
+const RM = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const SVGNS = 'http://www.w3.org/2000/svg';
+const tip = document.getElementById('tip');
+
+const deInt = n => Number(n).toLocaleString('de-DE');
+const deNum = (n,d) => Number(n).toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d});
+
+/* ---------- generic reveal ---------- */
+const rvEls = Array.prototype.slice.call(document.querySelectorAll('.rv'));
+if (RM) rvEls.forEach(el => el.classList.add('in'));
+else {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+        if (e.target.id === 'flussPane') queueFlowDraw();
+      }
+    });
+  }, {threshold:.18});
+  rvEls.forEach(el => io.observe(el));
+}
+
+/* ---------- counters ---------- */
+function runCounter(el){
+  const target = parseFloat(el.dataset.count);
+  const dec = parseInt(el.dataset.dec || '0', 10);
+  const fmt = v => dec ? deNum(v,dec) : deInt(Math.round(v));
+  if (RM || !isFinite(target)) { el.textContent = fmt(target); return; }
+  const t0 = performance.now(), DUR = 1250;
+  (function step(now){
+    const p = Math.min(1, (now - t0)/DUR);
+    const e = 1 - Math.pow(1-p, 3);
+    el.textContent = fmt(target * e);
+    if (p < 1) requestAnimationFrame(step);
+  })(t0);
+}
+const counters = Array.prototype.slice.call(document.querySelectorAll('[data-count]'));
+if (RM) counters.forEach(runCounter);
+else {
+  const cio = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting){ runCounter(e.target); cio.unobserve(e.target); } });
+  }, {threshold:.5});
+  counters.forEach(c => cio.observe(c));
+}
+
+/* ---------- tooltip ---------- */
+let tipVisible = false;
+function showTip(text, x, y){
+  tip.textContent = text;
+  tip.hidden = false;
+  requestAnimationFrame(() => {
+    const r = tip.getBoundingClientRect();
+    let L = x + 16, T = y + 18;
+    if (L + r.width > window.innerWidth - 10) L = x - r.width - 14;
+    if (T + r.height > window.innerHeight - 10) T = y - r.height - 14;
+    tip.style.left = Math.max(8,L) + 'px';
+    tip.style.top = Math.max(8,T) + 'px';
+    tip.classList.add('show');
+    tipVisible = true;
+  });
+}
+function hideTip(){
+  tip.classList.remove('show');
+  tipVisible = false;
+  setTimeout(() => { if (!tipVisible) tip.hidden = true; }, 160);
+}
+
+/* =========================================================
+   S2 · CONVERGENCE FLOW
+========================================================= */
+const NN = {
+  D:'D:', E:'E:',
+  F:'BACKUP große Platte (F:)', OD:'OneDrive-Backup', HA:'Handy-Sicherung',
+  DE:'BACKUP Desktop', DL:'Downloads', LP:'BACKUP lahme Platte (D:)',
+  DUP:'Doppelstücke', BIN:'Papierkorb-Einzelteile'
+};
+const FLOW = {
+  left: [
+    {id:'D', label:'D:', sub:'6 Hauptordner', val:'913,4 GB'},
+    {id:'E', label:'E:', sub:'2 Hauptordner', val:'292,2 GB'}
+  ],
+  rightOrder: ['F','OD','HA','DE','DL','LP','DUP','BIN'],
+  right: {
+    F:{type:'keep', name:'BACKUP große Platte (F:)', disp:'536,2'},
+    OD:{type:'keep', name:'OneDrive-Backup', disp:'35,3'},
+    HA:{type:'keep', name:'Handy-Sicherung', disp:'30,4'},
+    DE:{type:'keep', name:'BACKUP Desktop', disp:'10,2'},
+    DL:{type:'keep', name:'Downloads', disp:'3,4'},
+    LP:{type:'keep', name:'BACKUP lahme Platte (D:)', disp:'181,4'},
+    DUP:{type:'dup', name:'Doppelstücke', disp:'380,9', sub:'85.972 Kopien'},
+    BIN:{type:'bin', name:'Papierkorb-Einzelteile', disp:'27,9', sub:'195 Dateien'}
+  },
+  flows: [
+    {f:'D', t:'F',   g:536.2, d:'536,2'},
+    {f:'D', t:'OD',  g:35.3,  d:'35,3'},
+    {f:'D', t:'HA',  g:30.4,  d:'30,4'},
+    {f:'D', t:'DE',  g:10.2,  d:'10,2'},
+    {f:'D', t:'DL',  g:3.4,   d:'3,4'},
+    {f:'D', t:'DUP', g:281.0, d:'281,0'},
+    {f:'D', t:'BIN', g:17.0,  d:'17,0'},
+    {f:'E', t:'LP',  g:181.4, d:'181,4'},
+    {f:'E', t:'DUP', g:99.9,  d:'99,9'},
+    {f:'E', t:'BIN', g:10.9,  d:'10,9'}
+  ]
+};
+const COLORS = {keep:'#4a7c59', dup:'#b0524d', bin:'#c99a3f'};
+const BASEOP = {keep:.82, dup:.78, bin:.85};
+
+const host = document.getElementById('flowsvg');
+let drawnOnce = false;
+let flowDrawn = false;
+
+function mk(name, attrs, parent){
+  const el = document.createElementNS(SVGNS, name);
+  for (const k in attrs) el.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(el);
+  return el;
+}
+function txt(x, y, str, opt, parent){
+  const t = mk('text', {'x':x, 'y':y}, parent);
+  t.setAttribute('font-size', opt.size || 12);
+  if (opt.w) t.setAttribute('font-weight', opt.w);
+  if (opt.fill) t.setAttribute('fill', opt.fill);
+  if (opt.anchor) t.setAttribute('text-anchor', opt.anchor);
+  if (opt.ls) t.setAttribute('letter-spacing', opt.ls);
+  if (opt.mono) t.setAttribute('font-family', getComputedStyle(document.documentElement).getPropertyValue('--mono'));
+  if (opt.serif) t.setAttribute('font-family', getComputedStyle(document.documentElement).getPropertyValue('--serif'));
+  if (opt.cls) t.setAttribute('class', opt.cls);
+  Object.keys(opt).forEach(k => { if (k.indexOf('data-') === 0) t.setAttribute(k, opt[k]); });
+  t.textContent = str;
+  return t;
+}
+function splitName(s){
+  if (s.length <= 18) return [s];
+  let best = -1, mid = s.length/2;
+  for (let i = 0; i < s.length; i++){
+    if (s[i] === ' ' && (best === -1 || Math.abs(i - mid) < Math.abs(best - mid))) best = i;
+  }
+  if (best === -1) return [s];
+  const a = s.slice(0, best), b = s.slice(best+1);
+  return b.length > 18 ? [a, b.slice(0, b.lastIndexOf(' ') > 2 ? b.lastIndexOf(' ') : b.length)] : [a, b];
+}
+
+function buildFlow(){
+  const W = Math.max(host.clientWidth || 320, 300);
+  const narrow = W < 640;
+  const H = narrow ? 545 : 590;
+  const top = 52, bot = H - 20;
+  const FH = bot - top;
+  const wL = narrow ? 90 : 168, wR = narrow ? 82 : 148;
+  const xL = 10, xR = W - wR - 10;
+  const x1 = xL + wL, x2 = xR;
+
+  const s = g => Math.pow(g, 0.55);
+  const U = FLOW.flows.reduce((a,o) => a + s(o.g), 0);
+
+  const gapL = narrow ? 16 : 22;
+  const gIn  = narrow ? 8 : 12;      // gaps inside groups
+  const gZone= narrow ? 20 : 26;     // zone gap before sinks
+  const gapsR = 5*gIn + gZone + 1*gIn;
+
+  const ppu = Math.min((FH - gapL)/U, (FH - gapsR)/U);
+
+  /* left node geometry */
+  const dFlows = FLOW.flows.filter(o => o.f === 'D');
+  const eFlows = FLOW.flows.filter(o => o.f === 'E');
+  const hD = dFlows.reduce((a,o)=>a+s(o.g),0)*ppu;
+  const hE = eFlows.reduce((a,o)=>a+s(o.g),0)*ppu;
+  const yL0 = top + (FH - (U*ppu + gapL))/2;
+  const leftGeom = {
+    D:{x:xL, y:yL0, w:wL, h:hD},
+    E:{x:xL, y:yL0+hD+gapL, w:wL, h:hE}
+  };
+
+  /* right node geometry */
+  const rightGeom = {};
+  FLOW.rightOrder.forEach(id => { rightGeom[id] = {h:0}; });
+  FLOW.flows.forEach(o => { rightGeom[o.t].h += s(o.g)*ppu; });
+  let yR = top + (FH - (U*ppu + gapsR))/2;
+  FLOW.rightOrder.forEach((id, i) => {
+    rightGeom[id].x = xR; rightGeom[id].w = wR; rightGeom[id].y = yR;
+    yR += rightGeom[id].h;
+    if (id === 'DL') yR += gZone;            // zone gap before DUP
+    else if (i < FLOW.rightOrder.length - 1) yR += gIn;
+  });
+
+  /* band cursors */
+  const srcCursor = {D:leftGeom.D.y, E:leftGeom.E.y};
+  const dstCursor = {}; FLOW.rightOrder.forEach(id => dstCursor[id] = rightGeom[id].y);
+
+  const svg = mk('svg', {viewBox:'0 0 '+W+' '+H, 'class':'flow', role:'img',
+    'aria-label':'Datenfluss: Heute auf D: und E: plus Verluste, danach sechs behaltene Ziele.'});
+  const gLines = mk('g', {}, svg);
+  const gNodes = mk('g', {}, svg);
+  const gText  = mk('g', {}, svg);
+
+  /* column headers */
+  const headFill = '#9a8c7c';
+  const hcx = xL + wL/2;
+  const rcx = Math.min(xR + wR/2, W - (narrow ? 60 : 100));
+  txt(hcx, 28, 'HEUTE', {size:11, w:700, fill:headFill, anchor:'middle', ls:'.2em', cls:'ntxt'}, gText);
+  mk('rect', {x:hcx - 16, y:36, width:32, height:2.5, rx:1.25, fill:'#d8c9b5', 'class':'ntxt'}, gText);
+  txt(rcx, 28, narrow ? 'DANACH' : 'DANACH (AUFGERÄUMT)', {size:11, w:700, fill:headFill, anchor:'middle', ls:'.14em', cls:'ntxt'}, gText);
+  mk('rect', {x:rcx - 16, y:36, width:32, height:2.5, rx:1.25, fill:'#a9c6b2', 'class':'ntxt'}, gText);
+
+  /* flows */
+  const pathEls = [];
+  FLOW.flows.forEach((o, idx) => {
+    const wdt = Math.max(s(o.g)*ppu, 4);
+    const cy1 = srcCursor[o.f] + wdt/2;  srcCursor[o.f] += wdt;
+    const cy2 = dstCursor[o.t] + wdt/2;  dstCursor[o.t] += wdt;
+    const type = FLOW.right[o.t].type;
+    const c = Math.max((x2 - x1) * 0.5, 30);
+    const p = mk('path', {
+      'd': 'M '+x1+' '+cy1+' C '+(x1+c)+' '+cy1+', '+(x2-c)+' '+cy2+', '+x2+' '+cy2,
+      'class': 'flowline f-' + type,
+      'stroke': COLORS[type],
+      'stroke-width': wdt.toFixed(2),
+      'data-to': o.t, 'data-from': o.f,
+      'tabindex': 0, 'role': 'img'
+    }, gLines);
+    p.dataset.baseop = BASEOP[type];
+    p.dataset.tip = NN[o.f] + ' → ' + NN[o.t] + ' · ' + o.d + ' GB';
+    p.setAttribute('aria-label', p.dataset.tip);
+    pathEls.push(p);
+  });
+
+  /* left nodes */
+  FLOW.left.forEach(n => {
+    const g = leftGeom[n.id];
+    const r = mk('rect', {x:g.x, y:g.y, width:g.w, height:g.h, rx:12,
+      fill:'#fffdf9', stroke:'#dccfbe', 'stroke-width':1.5, 'class':'node', 'data-k':'nl-'+n.id}, gNodes);
+    const cx = g.x + g.w/2, cy = g.y + g.h/2;
+    r.classList.add('nl');
+    txt(cx, cy - (narrow?16:22), n.label, {size:narrow?19:27, w:600, fill:'#2b2724', anchor:'middle', serif:1, cls:'ntxt', 'data-k':'nl-'+n.id}, gText);
+    txt(cx, cy + (narrow?3:4), n.sub, {size:narrow?10:12, fill:'#9a8c7c', anchor:'middle', cls:'ntxt', 'data-k':'nl-'+n.id}, gText);
+    txt(cx, cy + (narrow?21:27), n.val, {size:narrow?11:13.5, w:700, fill:'#2b2724', anchor:'middle', mono:1, cls:'ntxt', 'data-k':'nl-'+n.id}, gText);
+  });
+
+  /* right nodes */
+  FLOW.rightOrder.forEach(id => {
+    const r = FLOW.right[id], g = rightGeom[id];
+    const fillMap = {keep:'#edf4ee', dup:'#f7e9e7', bin:'#faf3e1'};
+    const strkMap = {keep:'rgba(74,124,89,.4)', dup:'rgba(176,82,77,.45)', bin:'rgba(201,154,63,.5)'};
+    const txtMap  = {keep:'#3f6b4d', dup:'#8f3f3b', bin:'#8a6a24'};
+    mk('rect', {x:g.x, y:g.y, width:g.w, height:g.h, rx:11,
+      fill:fillMap[r.type], stroke:strkMap[r.type], 'stroke-width':1.5,
+      'class':'node nr', 'data-k':'nr-'+id}, gNodes);
+    const cx = g.x + g.w/2;
+    if (g.h >= 60){
+      const lines = splitName(r.name);
+      const nLines = lines.length + 1 + (r.sub ? 1 : 0);
+      const blockH = nLines * (narrow?12.5:14.5);
+      let y = g.y + g.h/2 - blockH/2 + (narrow?9:11);
+      lines.forEach(L => { txt(cx, y, L, {size:narrow?9.5:11.5, w:600, fill:txtMap[r.type], anchor:'middle', cls:'ntxt', 'data-k':'nr-'+id}, gText); y += narrow?12.5:14.5; });
+      if (r.sub){ txt(cx, y, r.sub, {size:narrow?8.5:10, fill:'#9a8c7c', anchor:'middle', cls:'ntxt', 'data-k':'nr-'+id}, gText); y += narrow?12.5:14.5; }
+      txt(cx, y, r.disp + ' GB', {size:narrow?10.5:13, w:700, fill:txtMap[r.type], anchor:'middle', mono:1, cls:'ntxt', 'data-k':'nr-'+id}, gText);
+    } else if (g.h >= 22){
+      txt(cx, g.y + g.h/2 + (narrow?3.5:4.5), r.disp + ' GB', {size:narrow?9.5:11.5, w:700, fill:txtMap[r.type], anchor:'middle', mono:1, cls:'ntxt', 'data-k':'nr-'+id}, gText);
+    }
+  });
+
+  host.innerHTML = '';
+  host.appendChild(svg);
+
+  /* draw-in preparation */
+  pathEls.forEach((p, i) => {
+    const len = p.getTotalLength();
+    p.dataset.order = i;
+    if (RM || flowDrawn){
+      p.style.opacity = p.dataset.baseop;
+    } else {
+      p.style.strokeDasharray = len;
+      p.style.strokeDashoffset = len;
+      p.style.opacity = 0;
+    }
+  });
+
+  bindFlowEvents(svg);
+}
+
+function queueFlowDraw(){
+  if (flowDrawn) return;
+  flowDrawn = true;
+  if (RM) return;
+  const paths = host.querySelectorAll('.flowline');
+  requestAnimationFrame(() => {
+    paths.forEach((p, i) => {
+      p.style.transition = 'opacity .5s ease ' + (i*0.08) + 's, stroke-dashoffset 1.15s cubic-bezier(.55,.05,.2,1) ' + (i*0.08) + 's';
+      p.style.strokeDashoffset = '0';
+      p.style.opacity = p.dataset.baseop;
+    });
+    setTimeout(() => { paths.forEach(p => { p.style.transition = ''; p.style.strokeDasharray = ''; }); }, 100 + paths.length*80 + 1200);
+  });
+}
+
+/* interactions — helpers always work on the current svg (safe across resizes) */
+function curSvg(){ return host.querySelector('svg.flow'); }
+function activateFlowEl(p){
+  const svg = curSvg(); if (!svg) return;
+  svg.classList.add('has-hover');
+  p.classList.add('on');
+  svg.querySelectorAll('[data-k="nl-'+p.dataset.from+'"],[data-k="nr-'+p.dataset.to+'"]').forEach(n => n.classList.add('on'));
+}
+function activateNodeFlows(id){
+  const svg = curSvg(); if (!svg) return;
+  svg.classList.add('has-hover');
+  svg.querySelectorAll('.flowline[data-to="'+id+'"]').forEach(p => {
+    p.classList.add('on');
+    svg.querySelectorAll('[data-k="nl-'+p.dataset.from+'"]').forEach(n => n.classList.add('on'));
+  });
+  svg.querySelectorAll('[data-k="nr-'+id+'"]').forEach(n => n.classList.add('on'));
+}
+function clearFlowStates(){
+  const svg = curSvg(); if (!svg) return;
+  svg.classList.remove('has-hover');
+  svg.querySelectorAll('.on').forEach(n => n.classList.remove('on'));
+}
+
+function bindFlowEvents(svg){
+  svg.addEventListener('pointermove', e => {
+    if (e.pointerType && e.pointerType !== 'mouse' && e.pointerType !== 'pen') return;
+    const t = e.target.closest ? e.target : null;
+    const p = t ? t.closest('.flowline') : null;
+    if (p){ activateFlowEl(p); showTip(p.dataset.tip, e.clientX, e.clientY); return; }
+    const n = t ? t.closest('[data-k^="nr-"]') : null;
+    if (n){ activateNodeFlows(n.getAttribute('data-k').slice(3)); hideTip(); return; }
+    clearFlowStates(); hideTip();
+  });
+  svg.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse') return;
+    const t = e.target.closest ? e.target : null;
+    const p = t ? t.closest('.flowline') : null;
+    if (p){ activateFlowEl(p); showTip(p.dataset.tip, e.clientX, e.clientY); return; }
+    const n = t ? t.closest('[data-k^="nr-"]') : null;
+    if (n) activateNodeFlows(n.getAttribute('data-k').slice(3));
+  });
+  svg.addEventListener('pointerleave', () => { clearFlowStates(); hideTip(); });
+  svg.addEventListener('focusin', e => {
+    const p = e.target.closest ? e.target.closest('.flowline') : null;
+    if (p){
+      activateFlowEl(p);
+      const r = p.getBoundingClientRect();
+      showTip(p.dataset.tip, r.left + r.width/2, r.top + r.height/2);
+    }
+  });
+  svg.addEventListener('focusout', () => { clearFlowStates(); hideTip(); });
+}
+
+/* legend sync — bound once */
+(function(){
+  const legend = document.getElementById('flowLegend');
+  legend.addEventListener('pointerover', e => {
+    clearFlowStates();
+    const c = e.target.closest ? e.target.closest('.chip') : null;
+    if (c) activateNodeFlows(c.dataset.node);
+  });
+  legend.addEventListener('pointerleave', () => clearFlowStates());
+  legend.addEventListener('focusin', e => {
+    const c = e.target.closest ? e.target.closest('.chip') : null;
+    if (c) activateNodeFlows(c.dataset.node);
+  });
+  legend.addEventListener('focusout', () => clearFlowStates());
+})();
+
+/* build + resize */
+buildFlow();
+if (RM){ flowDrawn = true; }
+let rzT;
+window.addEventListener('resize', () => {
+  clearTimeout(rzT);
+  rzT = setTimeout(() => { hideTip(); buildFlow(); }, 180);
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') hideTip(); });
+
+/* =========================================================
+   S3 · FOLDER COLLAPSE
+========================================================= */
+const VARIANTS = [
+  {name:'Aufgeräumt & umbenannt', count:4496, desc:'„Alles bleibt an seinem Ort – nur dopplungsfrei und mit sprechenden Namen. Der sanfte Weg.“'},
+  {name:'Schlankste Struktur', count:2013, desc:'„Der Radikale: 61 % weniger Ordner. Zusammenlegen nach der Bevorzugungs-Regel – alles findet sich auf Anhieb.“'},
+  {name:'Nur Löschen', count:4496, desc:'„Nur Doppelstücke weg, sonst passiert nichts. Struktur bleibt wie gewachsen.“'},
+  {name:'Tiefe Struktur behalten', count:4496, desc:'„Das gewachsene Verschachtelungsmuster bleibt – nur sauber und ohne Doppel.“'},
+  {name:'Bereit für externe Platte', count:4498, desc:'„Aufgeräumt und in der Form, in der alles auf eine externe Platte übersiedeln kann.“'}
+];
+const dotsHost = document.getElementById('dots');
+const dots = [];
+for (let i = 0; i < 206; i++){
+  const d = document.createElement('span');
+  d.className = 'dot';
+  d.style.setProperty('--i', i);
+  dotsHost.appendChild(d);
+  dots.push(d);
+}
+const afterEl = document.getElementById('afterN');
+const descEl = document.getElementById('vdesc');
+const pillBtns = Array.prototype.slice.call(document.querySelectorAll('.pill'));
+let curAfter = 2013;
+let curVar = 1;
+
+function tweenFolders(to){
+  if (RM){ afterEl.textContent = deInt(to); return; }
+  const from = curAfter, t0 = performance.now(), DUR = 620;
+  (function step(now){
+    const p = Math.min(1, (now - t0)/DUR);
+    const e = 1 - Math.pow(1-p, 3);
+    afterEl.textContent = deInt(Math.round(from + (to - from)*e));
+    if (p < 1) requestAnimationFrame(step);
+  })(t0);
+}
+function setVariant(idx, silent){
+  const v = VARIANTS[idx];
+  curVar = idx;
+  const kept = Math.round(v.count/25);
+  dots.forEach((d,i) => {
+    d.classList.toggle('ok', i < kept);
+    d.classList.toggle('out', i >= kept);
+  });
+  pillBtns.forEach((b,i) => b.setAttribute('aria-pressed', i === idx ? 'true' : 'false'));
+  if (silent || RM){
+    descEl.textContent = v.desc;
+    afterEl.textContent = deInt(v.count);
+    curAfter = v.count;
+  } else {
+    descEl.classList.add('fade');
+    setTimeout(() => { descEl.textContent = v.desc; descEl.classList.remove('fade'); }, 170);
+    tweenFolders(v.count);
+    curAfter = v.count;
+  }
+}
+/* initial state before first paint */
+descEl.textContent = VARIANTS[1].desc;
+(function(){
+  const kept = Math.round(VARIANTS[1].count/25);
+  dots.forEach((d,i) => { if (i < kept) d.classList.add('ok'); else d.classList.add('out'); });
+  pillBtns.forEach((b,i) => b.setAttribute('aria-pressed', i === 1 ? 'true' : 'false'));
+})();
+pillBtns.forEach(b => b.addEventListener('click', () => {
+  const idx = parseInt(b.dataset.v, 10);
+  if (idx !== curVar) setVariant(idx, false);
+}));
+
+})();
+</script>
+</body>
+</html>
